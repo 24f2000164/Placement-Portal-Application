@@ -1,0 +1,58 @@
+services:
+  - type: web
+    name: ppa-backend
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn run:app
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ppa-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: ppa-redis
+          type: redis
+          property: connectionString
+      - key: CELERY_BROKER_URL
+        fromService:
+          name: ppa-redis
+          type: redis
+          property: connectionString
+      - key: CELERY_RESULT_BACKEND
+        fromService:
+          name: ppa-redis
+          type: redis
+          property: connectionString
+      - key: MAIL_USERNAME
+        value: yourgmail@gmail.com
+      - key: MAIL_PASSWORD
+        value: your-app-password
+      - key: MAIL_DEFAULT_SENDER
+        value: yourgmail@gmail.com
+      - key: FLASK_ENV
+        value: production
+
+  - type: worker
+    name: ppa-celery-worker
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: celery -A celery_worker worker --loglevel=info --pool=solo
+
+  - type: worker
+    name: ppa-celery-beat
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: celery -A celery_worker beat --loglevel=info
+
+databases:
+  - name: ppa-db
+    databaseName: ppa
+    user: ppa_user
+
+  - name: ppa-redis
+    type: redis
