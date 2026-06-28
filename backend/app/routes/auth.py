@@ -3,6 +3,8 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.services.auth_service import register_student, register_company, login_user, get_user_profile
 from app.utils.validators import validate_registration
 
+from app.extensions import limiter
+
 auth_bp = Blueprint('auth', __name__)
 
 
@@ -40,7 +42,12 @@ def company_register():
     return jsonify({'message': 'Company registered successfully. Awaiting admin approval.'}), 201
 
 
+ 
+
+ 
+
 @auth_bp.route('/login', methods=['POST'])
+@limiter.limit("5 per minute")
 def login():
     data = request.get_json()
     if not data:

@@ -23,6 +23,8 @@ def create_app(config_name='default'):
     db.init_app(app)
     migrate.init_app(app, db)
     jwt.init_app(app)
+    from app.extensions import limiter
+    limiter.init_app(app)
     mail.init_app(app)
    
     init_celery(app)
@@ -30,8 +32,9 @@ def create_app(config_name='default'):
         init_redis(app)    
     except Exception as e:
         print(f"Redis not available: {e}")
-    CORS(app, resources={r"/api/*": {"origins": "*"}})
-
+    allowed_origins = os.environ.get("ALLOWED_ORIGINS", "*").split(",") 
+    CORS(app, resources={r"/api/*": {"origins": allowed_origins}})
+   
     # Import all models (needed for migrations)
     with app.app_context():
         from app import models  # noqa: F401
