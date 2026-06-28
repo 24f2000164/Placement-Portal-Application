@@ -32,8 +32,12 @@ def create_app(config_name='default'):
         init_redis(app)    
     except Exception as e:
         print(f"Redis not available: {e}")
-    allowed_origins = os.environ.get("ALLOWED_ORIGINS", "*").split(",") 
-    CORS(app, resources={r"/api/*": {"origins": allowed_origins}})
+    allowed_origins = os.environ.get("ALLOWED_ORIGINS", "*").split(",")
+    CORS(app, 
+    resources={r"/api/*": {"origins": allowed_origins}},
+    supports_credentials=True,
+    allow_headers=["Content-Type", "Authorization"],
+    methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
    
     # Import all models (needed for migrations)
     with app.app_context():
