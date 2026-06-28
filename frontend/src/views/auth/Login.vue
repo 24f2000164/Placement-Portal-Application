@@ -1,4 +1,4 @@
- <template>
+<template>
   <div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center bg-light">
     <div class="card shadow" style="width: 400px;">
       <div class="card-body p-4">
@@ -45,6 +45,8 @@
 </template>
 
 <script>
+import authService from '@/services/authService'
+
 export default {
   name: 'Login',
   data() {
@@ -66,22 +68,7 @@ export default {
       this.error = ''
 
       try {
-        const response = await fetch('/api/auth/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email: this.email,
-            password: this.password
-          })
-        })
-
-        const data = await response.json()
-        console.log('Login response:', data)
-
-        if (!response.ok) {
-          this.error = data.message || 'Login failed'
-          return
-        }
+        const data = await authService.loginUser(this.email, this.password)
 
         localStorage.setItem('token', data.token)
         localStorage.setItem('role', data.role)
@@ -97,9 +84,6 @@ export default {
           user: { id: data.user_id, email: data.email, role: data.role }
         })
 
-        console.log('token saved:', localStorage.getItem('token'))
-        console.log('role saved:', localStorage.getItem('role'))
-
         if (data.role === 'admin') {
           this.$router.push('/admin/dashboard')
         } else if (data.role === 'company') {
@@ -110,7 +94,7 @@ export default {
 
       } catch (err) {
         console.log('Error:', err)
-        this.error = 'Cannot connect to server. Make sure Flask is running on port 5000.'
+        this.error = err.response?.data?.message || 'Login failed. Please try again.'
       } finally {
         this.loading = false
       }
