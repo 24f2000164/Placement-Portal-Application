@@ -2,42 +2,42 @@ import api from './api'
 
 export default {
   async getDashboard() {
-    const response = await api.get('/api/company/dashboard')
+    const response = await api.get('/api/v1/company/dashboard')
     return response.data
   },
 
   async getProfile() {
-    const response = await api.get('/api/company/profile')
+    const response = await api.get('/api/v1/company/profile')
     return response.data
   },
 
   async updateProfile(data) {
-    const response = await api.put('/api/company/profile', data)
+    const response = await api.put('/api/v1/company/profile', data)
     return response.data
   },
 
   async getDrives() {
-    const response = await api.get('/api/company/drives')
+    const response = await api.get('/api/v1/company/drives')
     return response.data
   },
 
   async createDrive(data) {
-    const response = await api.post('/api/company/drives', data)
+    const response = await api.post('/api/v1/company/drives', data)
     return response.data
   },
 
   async updateDrive(id, data) {
-    const response = await api.put('/api/company/drives/' + id, data)
+    const response = await api.put('/api/v1/company/drives/' + id, data)
     return response.data
   },
 
   async closeDrive(id) {
-    const response = await api.put('/api/company/drives/' + id + '/close')
+    const response = await api.put('/api/v1/company/drives/' + id + '/close')
     return response.data
   },
 
   async getApplicants(driveId) {
-    const response = await api.get('/api/company/drives/' + driveId + '/applicants')
+    const response = await api.get('/api/v1/company/drives/' + driveId + '/applicants')
     return response.data
   },
 
@@ -45,27 +45,27 @@ export default {
     const payload = {}
     if (status) payload.status = status
     if (feedback) payload.feedback = feedback
-    const response = await api.put('/api/company/applications/' + applicationId + '/status', payload)
+    const response = await api.put('/api/v1/company/applications/' + applicationId + '/status', payload)
     return response.data
   },
 
   async scheduleInterview(applicationId, data) {
-    const response = await api.post('/api/company/applications/' + applicationId + '/interview', data)
+    const response = await api.post('/api/v1/company/applications/' + applicationId + '/interview', data)
     return response.data
   },
 
   async getStudentProfile(studentId) {
-    const response = await api.get('/api/company/students/' + studentId)
+    const response = await api.get('/api/v1/company/students/' + studentId)
     return response.data
   },
 
   async getAllApplications() {
-    const response = await api.get('/api/company/applications')
+    const response = await api.get('/api/v1/company/applications')
     return response.data
   },
 
   async triggerCsvExport() {
-    const response = await api.post('/api/company/export/csv')
+    const response = await api.post('/api/v1/company/export/csv')
     return response.data
   }
 }
