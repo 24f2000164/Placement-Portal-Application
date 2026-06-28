@@ -5,6 +5,7 @@ services:
     rootDir: backend
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn run:app
+    plan: free
     envVars:
       - key: SECRET_KEY
         generateValue: true
@@ -39,45 +40,6 @@ services:
         value: production
       - key: ALLOWED_ORIGINS
         value: https://your-netlify-app.netlify.app
-
-  - type: worker
-    name: ppa-celery-worker
-    env: python
-    rootDir: backend
-    buildCommand: pip install -r requirements.txt
-    startCommand: celery -A celery_worker worker --loglevel=info --pool=solo
-    envVars:
-      - key: DATABASE_URL
-        fromDatabase:
-          name: ppa-db
-          property: connectionString
-      - key: CELERY_BROKER_URL
-        fromService:
-          name: ppa-redis
-          type: keyvalue
-          property: connectionString
-      - key: CELERY_RESULT_BACKEND
-        fromService:
-          name: ppa-redis
-          type: keyvalue
-          property: connectionString
-
-  - type: worker
-    name: ppa-celery-beat
-    env: python
-    rootDir: backend
-    buildCommand: pip install -r requirements.txt
-    startCommand: celery -A celery_worker beat --loglevel=info
-    envVars:
-      - key: DATABASE_URL
-        fromDatabase:
-          name: ppa-db
-          property: connectionString
-      - key: CELERY_BROKER_URL
-        fromService:
-          name: ppa-redis
-          type: keyvalue
-          property: connectionString
 
   - type: keyvalue
     name: ppa-redis
