@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 from app.models.drive import PlacementDrive
 from app.models.application import Application
 from app.models.company import Company
@@ -53,3 +53,29 @@ def get_monthly_trends():
 
     cache_set('public:monthly:trends', data, 300)
     return jsonify(data), 200
+
+
+@public_bp.route('/seed-admin-once', methods=['GET'])
+def seed_admin():
+    secret = request.args.get('secret', '')
+    if secret != 'ppa-init-2026':
+        return jsonify({'message': 'Unauthorized'}), 401
+
+    from app.extensions import db
+    from app.models.user import User
+
+    existing = User.query.filter_by(role='admin').first()
+    if existing:
+        return jsonify({'message': f'Admin already exists: {existing.email}'}), 200
+
+    admin = User(
+        email='bt23ece015@nituk.ac.in',
+        role='admin',
+        is_active=True,
+        is_blacklisted=False
+    )
+    admin.set_password('Admin@123')
+    db.session.add(admin)
+    db.session.commit()
+
+    return jsonify({'message': 'Admin created!', 'email': 'bt23ece015@nituk.ac.in'}), 201
