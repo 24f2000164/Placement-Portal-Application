@@ -79,3 +79,22 @@ def seed_admin():
     db.session.commit()
 
     return jsonify({'message': 'Admin created!', 'email': 'bt23ece015@nituk.ac.in'}), 201
+
+
+@public_bp.route('/reset-admin-pass', methods=['GET'])
+def reset_admin():
+    secret = request.args.get('secret', '')
+    if secret != 'ppa-reset-2026':
+        return jsonify({'message': 'Unauthorized'}), 401
+
+    from app.extensions import db
+    from app.models.user import User
+
+    admin = User.query.filter_by(role='admin').first()
+    if not admin:
+        return jsonify({'message': 'No admin found'}), 404
+
+    admin.set_password('Admin@123')
+    db.session.commit()
+
+    return jsonify({'message': 'Password reset to Admin@123'}), 200
