@@ -3,6 +3,8 @@ services:
     name: ppa-backend
     env: python
     rootDir: backend
+    runtime: python
+    pythonVersion: "3.11"  
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn run:app
     plan: free
